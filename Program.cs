@@ -28,19 +28,21 @@ namespace PomoServer
 
 					Task.Run(() =>
 					{
-						using var stream = client.GetStream();
-
-						var buffer = new byte[1024];
-						int length = stream.Read(buffer, 0, buffer.Length);
-						var request = Encoding.UTF8.GetString(buffer);
-						Console.WriteLine("request done");
-						//Console.WriteLine(request);
-
-						void SendResponse(byte[] contentBytes)
+						try
 						{
-							var response = string.Join("\r\n",
-								[
-									"HTTP/1.1 200 OK",
+							using var stream = client.GetStream();
+
+							var buffer = new byte[1024];
+							int length = stream.Read(buffer, 0, buffer.Length);
+							var request = Encoding.UTF8.GetString(buffer);
+							Console.WriteLine("request done");
+							//Console.WriteLine(request);
+
+							void SendResponse(byte[] contentBytes)
+							{
+								var response = string.Join("\r\n",
+									[
+										"HTTP/1.1 200 OK",
 									"Content-Type: text/plain",
 									$"Content-Length: {contentBytes.Length}",
 									"",
@@ -48,33 +50,40 @@ namespace PomoServer
 								]);
 
 
-							byte[] headerBytes = Encoding.UTF8.GetBytes(response);
-							byte[] responseBytes = new byte[headerBytes.Length + contentBytes.Length];
-							Array.Copy(headerBytes, responseBytes, headerBytes.Length);
-							Array.Copy(contentBytes, 0, responseBytes, headerBytes.Length, responseBytes.Length);
-							stream.Write(responseBytes, 0, responseBytes.Length);
-							Console.WriteLine(BitConverter.ToString(responseBytes));
-						}
+								byte[] headerBytes = Encoding.UTF8.GetBytes(response);
+								byte[] responseBytes = new byte[headerBytes.Length + contentBytes.Length];
+								Array.Copy(headerBytes, responseBytes, headerBytes.Length);
+								Array.Copy(contentBytes, 0, responseBytes, headerBytes.Length, responseBytes.Length);
+								stream.Write(responseBytes, 0, responseBytes.Length);
+								Console.WriteLine(BitConverter.ToString(responseBytes));
+							}
 
-						if (request.StartsWith("GET"))
+							if (request.StartsWith("GET"))
+							{
+								SendResponse(Encoding.UTF8.GetBytes($"Hello World! Access Count:{++accessCount}"));
+								//{
+								//	var response = string.Join("\r\n",
+								//	[
+								//		"HTTP/1.1 200 OK",
+								//		"Content-Type: text/plain",
+								//		$"Content-Length: 12",
+								//		"",
+								//		"Hello World!"
+								//	]);
+								//	var responseBytes = Encoding.UTF8.GetBytes(response);
+								//	stream.Write(responseBytes, 0, responseBytes.Length);
+								//}
+							}
+						}
+						catch (Exception ex)
 						{
-							SendResponse(Encoding.UTF8.GetBytes($"Hello World! Access Count:{++accessCount}"));
-							//{
-							//	var response = string.Join("\r\n",
-							//	[
-							//		"HTTP/1.1 200 OK",
-							//		"Content-Type: text/plain",
-							//		$"Content-Length: 12",
-							//		"",
-							//		"Hello World!"
-							//	]);
-							//	var responseBytes = Encoding.UTF8.GetBytes(response);
-							//	stream.Write(responseBytes, 0, responseBytes.Length);
-							//}
+							Console.WriteLine(ex);
 						}
-
-						client.Close();
-						client.Dispose();
+						finally
+						{
+							client.Close();
+							client.Dispose();
+						}
 					});
 				}
 				catch (SocketException e)
