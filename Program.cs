@@ -95,13 +95,13 @@ namespace PomoServer
 								if (request.StartsWith("GET /count"))
 								{
 									Console.Write(" /count");
-									SendResponseText(Encoding.UTF8.GetBytes($"{accessCount}"));
+									//SendResponseText(Encoding.UTF8.GetBytes($"{accessCount}"));
 								}
 								else
 								{
 									Console.Write(" /");
-									SendResponseHTML(Encoding.UTF8.GetBytes(File.ReadAllText("./public/index.html")
-										.Replace("{%%hogehogefugafuga}", $"{++accessCount}")));
+									// SendResponseHTML(Encoding.UTF8.GetBytes(File.ReadAllText("./public/index.html")
+									// 	.Replace("{%%hogehogefugafuga}", $"{++accessCount}")));
 								}
 							}
 							Console.WriteLine();
