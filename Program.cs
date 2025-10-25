@@ -29,17 +29,20 @@ namespace PomoServer
 				{
 					var client = listener.AcceptTcpClient();
 
-					Task.Run(() =>
+					Task.Run(async () =>
 					{
 						try
 						{
 							using var stream = client.GetStream();
-							Console.WriteLine("client.GetStream :)");
-							using var bufferStream = new MemoryStream();
-							Console.WriteLine("created buff stream :|");
-							stream.CopyTo(bufferStream, Math.Min((int)stream.Length, 1024));
-							Console.WriteLine("copy stream ok :3");
 
+							using var bufferStream = new MemoryStream();
+							int length = int.MaxValue;
+							byte[] buffer = new byte[1024];
+							while (length <= 0)
+							{
+								length = await stream.ReadAsync(buffer, CancellationToken.None);
+								bufferStream.Write(buffer, 0, length);
+							}
 							var request = Encoding.UTF8.GetString(bufferStream.ToArray());
 							Console.WriteLine($"request done from l{client.Client.LocalEndPoint} r{client.Client.RemoteEndPoint}");
 
