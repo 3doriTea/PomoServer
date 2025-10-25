@@ -53,7 +53,7 @@ namespace PomoServer
 								byte[] headerBytes = Encoding.UTF8.GetBytes(response);
 								byte[] responseBytes = new byte[headerBytes.Length + contentBytes.Length];
 								Array.Copy(headerBytes, responseBytes, headerBytes.Length);
-								Array.Copy(contentBytes, 0, responseBytes, headerBytes.Length, responseBytes.Length);
+								Array.Copy(contentBytes, 0, responseBytes, headerBytes.Length, contentBytes.Length);
 								stream.Write(responseBytes, 0, responseBytes.Length);
 								Console.WriteLine(BitConverter.ToString(responseBytes));
 							}
