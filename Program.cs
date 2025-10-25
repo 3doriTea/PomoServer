@@ -8,7 +8,7 @@ namespace PomoServer
 	{
 		static void Main(string[] args)
 		{
-			var listener = new TcpListener(IPAddress.Parse("192.168.0.159"), 80);
+			var listener = new TcpListener(IPAddress.Parse("192.168.3.159"), 80);
 			listener.Start();
 			Console.WriteLine($"Listening on {listener.LocalEndpoint}");
 	
