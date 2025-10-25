@@ -94,7 +94,7 @@ namespace PomoServer
 								else
 								{
 									SendResponseHTML(Encoding.UTF8.GetBytes(File.ReadAllText("./public/index.html")
-										.Replace("{%%hogehogefugafuga}", $"{accessCount}")));
+										.Replace("{%%hogehogefugafuga}", $"{++accessCount}")));
 								}
 							}
 						}
