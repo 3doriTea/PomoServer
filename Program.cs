@@ -47,6 +47,8 @@ namespace PomoServer
 									// コンテンツは byte配列直で結合
 								]);
 
+							Console.WriteLine(response);
+
 							byte[] headerBytes = Encoding.UTF8.GetBytes(response);
 							byte[] responseBytes = new byte[headerBytes.Length + contentBytes.Length];
 							stream.Write(responseBytes, 0, responseBytes.Length);
@@ -54,19 +56,19 @@ namespace PomoServer
 
 						if (request.StartsWith("GET"))
 						{
-							//SendResponse(Encoding.UTF8.GetBytes($"Hello World! Access Count:{++accessCount}"));
-							{
-								var response = string.Join("\r\n",
-								[
-									"HTTP/1.1 200 OK",
-									"Content-Type: text/plain",
-									$"Content-Length: 12",
-									"",
-									"Hello World!"
-								]);
-								var responseBytes = Encoding.UTF8.GetBytes(response);
-								stream.Write(responseBytes, 0, responseBytes.Length);
-							}
+							SendResponse(Encoding.UTF8.GetBytes($"Hello World! Access Count:{++accessCount}"));
+							//{
+							//	var response = string.Join("\r\n",
+							//	[
+							//		"HTTP/1.1 200 OK",
+							//		"Content-Type: text/plain",
+							//		$"Content-Length: 12",
+							//		"",
+							//		"Hello World!"
+							//	]);
+							//	var responseBytes = Encoding.UTF8.GetBytes(response);
+							//	stream.Write(responseBytes, 0, responseBytes.Length);
+							//}
 						}
 
 						client.Close();
