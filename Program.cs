@@ -110,6 +110,8 @@ namespace PomoServer
 								if (request.StartsWith("POST /objectcreate"))
 								{
 									Console.Write(" /objectcreate");
+
+									Console.Write(request);
 									bufferStream.Seek(0, SeekOrigin.Begin);
 									var parser = await MultipartFormDataParser.ParseAsync(bufferStream);
 									Console.Write("parsed");
