@@ -48,8 +48,8 @@ namespace PomoServer
 								]);
 
 							byte[] headerBytes = Encoding.UTF8.GetBytes(response);
-							var responseBytes = headerBytes.Concat(contentBytes);
-							stream.Write([.. responseBytes], 0, responseBytes.Count());
+							byte[] responseBytes = new byte[headerBytes.Length + contentBytes.Length];
+							stream.Write(responseBytes, 0, responseBytes.Length);
 						}
 
 						if (request.StartsWith("GET"))
