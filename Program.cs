@@ -55,7 +55,7 @@ namespace PomoServer
 								Array.Copy(headerBytes, responseBytes, headerBytes.Length);
 								Array.Copy(contentBytes, 0, responseBytes, headerBytes.Length, contentBytes.Length);
 								stream.Write(responseBytes, 0, responseBytes.Length);
-								Console.WriteLine(BitConverter.ToString(responseBytes).Replace("-", ""));
+								Console.WriteLine(BitConverter.ToString(responseBytes).Replace("-", " "));
 							}
 
 							if (request.StartsWith("GET"))
