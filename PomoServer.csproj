@@ -16,4 +16,8 @@
     <WarningLevel>8</WarningLevel>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="HttpMultipartParser" Version="9.1.0" />
+  </ItemGroup>
+
 </Project>

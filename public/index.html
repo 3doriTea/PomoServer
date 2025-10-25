@@ -9,6 +9,19 @@
     <h1>ようこそ！{%%hogehogefugafuga}回目にアクセスした君！</h1>
 
     <p id="counter"></p>
+
+    <p>ここに好きなファイルをアップロードしてね</p>
+    <!--<input type="file" accept="image/*" id="objectInput"/>-->
+    <form name="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+        <div>
+            <input id="uploadInput" type="file" multiple />
+            <label for="fileCount">選択されたファイル:</label>
+            <output id="fileCount">0</output>;
+            <label for="fileSize">合計サイズ:</label>
+            <output id="fileSize">0</output>
+        </div>
+        <div><input type="submit" value="Send file" /></div>
+    </form>
     <script>
         (async () => {
             while (true) {
@@ -17,6 +30,42 @@
                 document.getElementById("counter").textContent = `今世界から${text}回アクセスされてますぞい！`;
             }
         })();
+
+        const input = document.getElementById("uploadInput");
+        const fileCount = document.getElementById("fileCount");
+        const fileSize = document.getElementById("fileSize");
+
+        input.addEventListener("change", () => {
+            const files = input.files;
+            fileCount.value = files.length;
+            let sumSize = 0;
+            for (const file of files) {
+                sumSize += file.size;
+            }
+            fileSize.value = `${sumSize} byte`;  // 合計サイズの計算したやつ！
+        });
+
+        const submitButton = document.getElementById("submit");
+        submitButton.addEventListener("check", async () => {
+            const files = input.files;
+            if (!files.length) {
+                console.log("ファイルが設定されてないよ！");
+                return;
+            }
+
+            const formData = new FormData();
+            for (const file of files) {
+                formData.append("files[]", file);
+            }
+
+            try {
+                const response = await fetch("/objectcreate", {
+                    method: "POST",
+                    body: formData,
+                });
+            }
+        });
+
     </script>
 </body>
 

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using HttpMultipartParser;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
@@ -6,6 +7,8 @@ namespace PomoServer
 {
 	internal class Program
 	{
+		private readonly static World.ResourceManager _resourceManager = new("../../db/", "data.dat", "header.dat");
+
 		static void Main(string[] args)
 		{
 			var listener = new TcpListener(IPAddress.Parse("192.168.3.159"), 80);
@@ -26,15 +29,15 @@ namespace PomoServer
 				{
 					var client = listener.AcceptTcpClient();
 
-					Task.Run(() =>
+					Task.Run(async () =>
 					{
 						try
 						{
 							using var stream = client.GetStream();
+							var bufferStream = new MemoryStream();
+							stream.CopyTo(bufferStream, 1024);
 
-							var buffer = new byte[1024];
-							int length = stream.Read(buffer, 0, buffer.Length);
-							var request = Encoding.UTF8.GetString(buffer);
+							var request = Encoding.UTF8.GetString(bufferStream.ToArray());
 							Console.WriteLine($"request done from l{client.Client.LocalEndPoint} r{client.Client.RemoteEndPoint}");
 
 							void SendResponseHTML(byte[] contentBytes)
@@ -90,6 +93,27 @@ namespace PomoServer
 								{
 									SendResponseHTML(Encoding.UTF8.GetBytes(File.ReadAllText("./public/index.html")
 										.Replace("{%%hogehogefugafuga}", $"{++accessCount}")));
+								}
+							}
+							else if (request.StartsWith("POST"))
+							{
+								if (request.StartsWith("POST /objectcreate"))
+								{
+									var parser = await MultipartFormDataParser.ParseAsync(stream);
+									foreach (var file in parser.Files)
+									{
+										using var ms = new MemoryStream();
+										file.Data.CopyTo(ms);
+										bool succeed = await _resourceManager.AddFile(
+											file.FileName,
+											file.FileName,
+											ms.ToArray()
+											).WaitAsync(CancellationToken.None);
+										//if (succeed == false)
+										//{
+											
+										//}
+									}
 								}
 							}
 						}
