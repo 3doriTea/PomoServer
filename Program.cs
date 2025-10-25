@@ -38,7 +38,7 @@ namespace PomoServer
 							using var bufferStream = new MemoryStream();
 							int length = int.MaxValue;
 							byte[] buffer = new byte[1024];
-							while (length <= 0)
+							while (length > 0)
 							{
 								length = await stream.ReadAsync(buffer, CancellationToken.None);
 								Console.WriteLine($"bytes length :{length}");
