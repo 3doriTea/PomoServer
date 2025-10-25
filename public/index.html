@@ -24,7 +24,7 @@
     <!--</form>-->
     <script>
         (async () => {
-            while (true) {
+            while (false) {
                 const response = await fetch("count/", { method: "GET" });
                 const text = await response.text();
                 document.getElementById("counter").textContent = `今世界から${text}回アクセスされてますぞい！`;
