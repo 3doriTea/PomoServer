@@ -1,3 +1,70 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
-Console.WriteLine("This is Pomo Server!! :3");
+﻿using System.Net;
+using System.Net.Sockets;
+using System.Text;
+
+internal class Program
+{
+	static void Main(string[] args)
+	{
+		var listener = new TcpListener(IPAddress.Parse("192.168.158.0"), 8000);
+		listener.Start();
+		Console.WriteLine($"Listening on {listener.LocalEndpoint}");
+
+		using var client = listener.AcceptTcpClient();
+		using var stream = client.GetStream();
+
+		var buffer = new byte[1024];
+		int length = stream.Read(buffer, 0, buffer.Length);
+		var request = Encoding.UTF8.GetString(buffer);
+		Console.WriteLine(request);
+
+		if (request.StartsWith("GET"))
+		{
+			var response = string.Join("\r\n",
+			[
+				"HTTP/1.1 200 OK",
+					"Content-Type: text/plain",
+					"Content-Length: 11",
+					"",
+					"Hello World"
+			]);
+
+			byte[] responseBytes = Encoding.UTF8.GetBytes(response);
+			stream.Write(responseBytes, 0, responseBytes.Length);
+		}
+#if false
+		Task.Run(async () =>
+		{
+			var listener = new TcpListener(IPAddress.Any, 80);
+			listener.Start();
+			Console.WriteLine($"Listening on {listener.LocalEndpoint}");
+
+			//while (true)
+			{
+				using var client = await listener.AcceptTcpClientAsync();
+				using var stream = client.GetStream();
+
+				var buffer = new byte[1024];
+				int length = stream.Read(buffer, 0, buffer.Length);
+				var request = Encoding.UTF8.GetString(buffer);
+				Console.WriteLine(request);
+
+				if (request.StartsWith("GET"))
+				{
+					var response = string.Join("\r\n",
+					[
+						"HTTP/1.1 200 OK",
+						"Content-Type: text/plain",
+						"Content-Length: 11",
+						"",
+						"Hello World"
+					]);
+
+					byte[] responseBytes = Encoding.UTF8.GetBytes(response);
+					stream.Write(responseBytes, 0, responseBytes.Length);
+				}
+			}
+		}).Wait();
+#endif
+	}
+}
