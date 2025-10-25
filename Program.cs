@@ -104,27 +104,27 @@ namespace PomoServer
 										.Replace("{%%hogehogefugafuga}", $"{++accessCount}")));
 								}
 							}
+							else if (request.StartsWith("POST"))
+							{
+								if (request.StartsWith("POST /objectcreate"))
+								{
+									var parser = await MultipartFormDataParser.ParseAsync(stream);
+									foreach (var file in parser.Files)
+									{
+										using var ms = new MemoryStream();
+										file.Data.CopyTo(ms);
+										bool succeed = await _resourceManager.AddFile(
+											file.FileName,
+											file.FileName,
+											ms.ToArray()
+											).WaitAsync(CancellationToken.None);
+										//if (succeed == false)
+										//{
+										//}
+									}
+								}
+							}
 							Console.WriteLine();
-							//else if (request.StartsWith("POST"))
-							//{
-							//	if (request.StartsWith("POST /objectcreate"))
-							//	{
-							//		var parser = await MultipartFormDataParser.ParseAsync(stream);
-							//		foreach (var file in parser.Files)
-							//		{
-							//			using var ms = new MemoryStream();
-							//			file.Data.CopyTo(ms);
-							//			bool succeed = await _resourceManager.AddFile(
-							//				file.FileName,
-							//				file.FileName,
-							//				ms.ToArray()
-							//				).WaitAsync(CancellationToken.None);
-							//			//if (succeed == false)
-							//			//{
-							//			//}
-							//		}
-							//	}
-							//}
 						}
 						catch (Exception ex)
 						{
