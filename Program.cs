@@ -29,7 +29,7 @@ namespace PomoServer
 				{
 					var client = listener.AcceptTcpClient();
 
-					Task.Run(() =>
+					Task.Run(async () =>
 					{
 						try
 						{
@@ -38,11 +38,10 @@ namespace PomoServer
 							using var bufferStream = new MemoryStream();
 							int length = int.MaxValue;
 							byte[] buffer = new byte[1024];
-							while (length > 0)
+							while (stream.DataAvailable)
 							{
-								length = stream.Read(buffer, 0, 1024);
-								bufferStream.Write(buffer, 0, length);
-								Console.WriteLine($"write len:{length}");
+								length = await stream.ReadAsync(buffer);
+								await bufferStream.WriteAsync(buffer);
 							}
 							var request = Encoding.UTF8.GetString(bufferStream.ToArray());
 							Console.WriteLine($"request done from l{client.Client.LocalEndPoint} r{client.Client.RemoteEndPoint}");
@@ -96,13 +95,13 @@ namespace PomoServer
 								if (request.StartsWith("GET /count"))
 								{
 									Console.Write(" /count");
-									//SendResponseText(Encoding.UTF8.GetBytes($"{accessCount}"));
+									SendResponseText(Encoding.UTF8.GetBytes($"{accessCount}"));
 								}
 								else
 								{
 									Console.Write(" /");
-									// SendResponseHTML(Encoding.UTF8.GetBytes(File.ReadAllText("./public/index.html")
-									// 	.Replace("{%%hogehogefugafuga}", $"{++accessCount}")));
+									SendResponseHTML(Encoding.UTF8.GetBytes(File.ReadAllText("./public/index.html")
+										.Replace("{%%hogehogefugafuga}", $"{++accessCount}")));
 								}
 							}
 							Console.WriteLine();
