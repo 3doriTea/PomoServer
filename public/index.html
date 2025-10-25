@@ -20,7 +20,7 @@
             <label for="fileSize">合計サイズ:</label>
             <output id="fileSize">0</output>
         </div>
-        <div><input type="submit" value="Send file" /></div>
+        <div><input id="submitButton" type="submit" value="Send file" /></div>
     <!--</form>-->
     <script>
         (async () => {
@@ -45,8 +45,10 @@
             fileSize.value = `${sumSize} byte`;  // 合計サイズの計算したやつ！
         });
 
-        const submitButton = document.getElementById("submit");
-        submitButton.addEventListener("check", async () => {
+        const submitButton = document.getElementById("submitButton");
+        submitButton.addEventListener("submit", async () => {
+            event.preventDefault();
+
             const files = input.files;
             if (!files.length) {
                 console.log("ファイルが設定されてないよ！");
