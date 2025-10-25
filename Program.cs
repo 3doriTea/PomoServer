@@ -43,11 +43,11 @@ namespace PomoServer
 								var response = string.Join("\r\n",
 									[
 										"HTTP/1.1 200 OK",
-									"Content-Type: text/plain",
-									$"Content-Length: {contentBytes.Length}",
-									"",
+										"Content-Type: text/plain",
+										$"Content-Length: {contentBytes.Length}",
 									// コンテンツは byte配列直で結合
 								]);
+								response += "\r\n";
 
 
 								byte[] headerBytes = Encoding.UTF8.GetBytes(response);
