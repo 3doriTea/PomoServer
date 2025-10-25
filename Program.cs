@@ -47,7 +47,7 @@ namespace PomoServer
 										$"Content-Length: {contentBytes.Length}",
 									// コンテンツは byte配列直で結合
 								]);
-								response += "\r\n";
+								response += "\r\n\r\n";
 
 
 								byte[] headerBytes = Encoding.UTF8.GetBytes(response);
