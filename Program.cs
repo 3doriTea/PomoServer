@@ -34,8 +34,11 @@ namespace PomoServer
 						try
 						{
 							using var stream = client.GetStream();
-							var bufferStream = new MemoryStream();
+							Console.WriteLine("client.GetStream :)");
+							using var bufferStream = new MemoryStream();
+							Console.WriteLine("created buff stream :|");
 							stream.CopyTo(bufferStream, 1024);
+							Console.WriteLine("copy stream ok :3");
 
 							var request = Encoding.UTF8.GetString(bufferStream.ToArray());
 							Console.WriteLine($"request done from l{client.Client.LocalEndPoint} r{client.Client.RemoteEndPoint}");
