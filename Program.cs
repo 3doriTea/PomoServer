@@ -37,7 +37,7 @@ namespace PomoServer
 							Console.WriteLine("client.GetStream :)");
 							using var bufferStream = new MemoryStream();
 							Console.WriteLine("created buff stream :|");
-							stream.CopyTo(bufferStream, 1024);
+							stream.CopyTo(bufferStream, Math.Min((int)stream.Length, 1024));
 							Console.WriteLine("copy stream ok :3");
 
 							var request = Encoding.UTF8.GetString(bufferStream.ToArray());
