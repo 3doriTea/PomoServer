@@ -135,6 +135,10 @@ namespace PomoServer
 									}
 								}
 							}
+							else
+							{
+								Console.Write($"{request.Substring(0, 30)}...");
+							}
 							Console.WriteLine();
 						}
 						catch (Exception ex)
