@@ -40,7 +40,7 @@ namespace PomoServer
 							byte[] buffer = new byte[1024];
 							while (length > 0)
 							{
-								length = stream.Read(buffer);
+								length = stream.Read(buffer, 0, 1024);
 								bufferStream.Write(buffer, 0, length);
 							}
 							var request = Encoding.UTF8.GetString(bufferStream.ToArray());
