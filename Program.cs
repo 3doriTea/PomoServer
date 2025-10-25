@@ -37,8 +37,7 @@ namespace PomoServer
 							var buffer = new byte[1024];
 							int length = stream.Read(buffer, 0, buffer.Length);
 							var request = Encoding.UTF8.GetString(buffer);
-							Console.WriteLine("request done");
-							//Console.WriteLine(request);
+							Console.WriteLine($"request done from {client.Client.RemoteEndPoint}");
 
 							void SendResponseHTML(byte[] contentBytes)
 							{
@@ -60,7 +59,6 @@ namespace PomoServer
 								Array.Copy(headerBytes, responseBytes, headerBytes.Length);
 								Array.Copy(contentBytes, 0, responseBytes, headerBytes.Length, contentBytes.Length);
 								stream.Write(responseBytes, 0, responseBytes.Length);
-								Console.WriteLine(BitConverter.ToString(responseBytes).Replace("-", " "));
 							}
 
 							void SendResponseText(byte[] contentBytes)
@@ -82,7 +80,6 @@ namespace PomoServer
 								Array.Copy(headerBytes, responseBytes, headerBytes.Length);
 								Array.Copy(contentBytes, 0, responseBytes, headerBytes.Length, contentBytes.Length);
 								stream.Write(responseBytes, 0, responseBytes.Length);
-								Console.WriteLine(BitConverter.ToString(responseBytes).Replace("-", " "));
 							}
 
 							if (request.StartsWith("GET"))
