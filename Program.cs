@@ -29,7 +29,7 @@ namespace PomoServer
 				{
 					var client = listener.AcceptTcpClient();
 
-					Task.Run(async () =>
+					Task.Run(() =>
 					{
 						try
 						{
@@ -40,7 +40,7 @@ namespace PomoServer
 							byte[] buffer = new byte[1024];
 							while (length > 0)
 							{
-								length = await stream.ReadAsync(buffer, CancellationToken.None);
+								length = stream.Read(buffer);
 								bufferStream.Write(buffer, 0, length);
 							}
 							var request = Encoding.UTF8.GetString(bufferStream.ToArray());
