@@ -41,12 +41,10 @@ namespace PomoServer
 							while (length > 0)
 							{
 								length = await stream.ReadAsync(buffer, CancellationToken.None);
-								Console.WriteLine($"bytes length :{length}");
 								bufferStream.Write(buffer, 0, length);
 							}
-							Console.WriteLine($"buff stream length :{bufferStream.Length}");
 							var request = Encoding.UTF8.GetString(bufferStream.ToArray());
-							Console.WriteLine($"request done from l{client.Client.LocalEndPoint} r{client.Client.RemoteEndPoint}, {request}");
+							Console.WriteLine($"request done from l{client.Client.LocalEndPoint} r{client.Client.RemoteEndPoint}");
 
 							void SendResponseHTML(byte[] contentBytes)
 							{
@@ -93,16 +91,20 @@ namespace PomoServer
 
 							if (request.StartsWith("GET"))
 							{
+								Console.Write("Method: Get");
 								if (request.StartsWith("GET /count"))
 								{
+									Console.Write(" /count");
 									SendResponseText(Encoding.UTF8.GetBytes($"{accessCount}"));
 								}
 								else
 								{
+									Console.Write(" /");
 									SendResponseHTML(Encoding.UTF8.GetBytes(File.ReadAllText("./public/index.html")
 										.Replace("{%%hogehogefugafuga}", $"{++accessCount}")));
 								}
 							}
+							Console.WriteLine();
 							//else if (request.StartsWith("POST"))
 							//{
 							//	if (request.StartsWith("POST /objectcreate"))
@@ -119,7 +121,6 @@ namespace PomoServer
 							//				).WaitAsync(CancellationToken.None);
 							//			//if (succeed == false)
 							//			//{
-											
 							//			//}
 							//		}
 							//	}
