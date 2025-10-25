@@ -41,7 +41,10 @@ namespace PomoServer.World
 			{
 				ResourceHeader = new Header();
 
-				Directory.Exists("")
+				if (Directory.Exists(dir) == false)
+				{
+					Directory.CreateDirectory(dir);
+				}
 
 				using var fs = new FileStream(_headerFileName, FileMode.OpenOrCreate, FileAccess.Read);
 
