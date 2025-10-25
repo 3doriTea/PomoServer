@@ -106,11 +106,15 @@ namespace PomoServer
 							}
 							else if (request.StartsWith("POST"))
 							{
+								Console.Write("Method: POST");
 								if (request.StartsWith("POST /objectcreate"))
 								{
+									Console.Write(" /objectcreate");
 									var parser = await MultipartFormDataParser.ParseAsync(stream);
+									Console.Write("parsed");
 									foreach (var file in parser.Files)
 									{
+										Console.Write("file reading");
 										using var ms = new MemoryStream();
 										file.Data.CopyTo(ms);
 										bool succeed = await _resourceManager.AddFile(
@@ -118,9 +122,16 @@ namespace PomoServer
 											file.FileName,
 											ms.ToArray()
 											).WaitAsync(CancellationToken.None);
-										//if (succeed == false)
-										//{
-										//}
+
+										Console.WriteLine($"upload {(succeed ? "OK" : "NG")}");
+
+										if (succeed)
+										{
+										}
+										else
+										{
+
+										}
 									}
 								}
 							}
