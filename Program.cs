@@ -1,7 +1,5 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using System.Net.WebSockets;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace PomoServer
@@ -37,7 +35,7 @@ namespace PomoServer
 							var buffer = new byte[1024];
 							int length = stream.Read(buffer, 0, buffer.Length);
 							var request = Encoding.UTF8.GetString(buffer);
-							Console.WriteLine($"request done from {client.Client.RemoteEndPoint}");
+							Console.WriteLine($"request done from l{client.Client.LocalEndPoint} r{client.Client.RemoteEndPoint}");
 
 							void SendResponseHTML(byte[] contentBytes)
 							{
