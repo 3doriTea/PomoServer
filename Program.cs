@@ -47,11 +47,11 @@ namespace PomoServer
 									// コンテンツは byte配列直で結合
 								]);
 
-							Console.WriteLine(response);
 
 							byte[] headerBytes = Encoding.UTF8.GetBytes(response);
 							byte[] responseBytes = new byte[headerBytes.Length + contentBytes.Length];
 							stream.Write(responseBytes, 0, responseBytes.Length);
+							Console.WriteLine(BitConverter.ToString(responseBytes));
 						}
 
 						if (request.StartsWith("GET"))
