@@ -18,6 +18,8 @@ namespace PomoServer
 
 			Console.WriteLine($"Listening on {listener.LocalEndpoint}");
 
+			int accessCount = 0;
+
 			while (true)
 			{
 				try
@@ -34,19 +36,25 @@ namespace PomoServer
 						Console.WriteLine("request done");
 						//Console.WriteLine(request);
 
-						if (request.StartsWith("GET"))
+						void SendResponse(byte[] contentBytes)
 						{
 							var response = string.Join("\r\n",
-							[
-								"HTTP/1.1 200 OK",
-								"Content-Type: text/plain",
-								"Content-Length: 11",
-								"",
-								"Hello World"
-							]);
+								[
+									"HTTP/1.1 200 OK",
+									"Content-Type: text/plain",
+									$"Content-Length: {contentBytes.Length}",
+									"",
+									// コンテンツは byte配列直で結合
+								]);
 
-							byte[] responseBytes = Encoding.UTF8.GetBytes(response);
-							stream.Write(responseBytes, 0, responseBytes.Length);
+							byte[] headerBytes = Encoding.UTF8.GetBytes(response);
+							var responseBytes = headerBytes.Concat(contentBytes);
+							stream.Write([.. responseBytes], 0, responseBytes.Count());
+						}
+
+						if (request.StartsWith("GET"))
+						{
+							SendResponse(Encoding.UTF8.GetBytes($"Hello World! このサーバーに{++accessCount}回目のアクセスですぞい"));
 						}
 
 						client.Close();
