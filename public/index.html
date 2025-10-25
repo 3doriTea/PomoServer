@@ -12,7 +12,7 @@
 
     <p>ここに好きなファイルをアップロードしてね</p>
     <!--<input type="file" accept="image/*" id="objectInput"/>-->
-    <form name="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+    <!--<form name="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">-->
         <div>
             <input id="uploadInput" type="file" multiple />
             <label for="fileCount">選択されたファイル:</label>
@@ -21,7 +21,7 @@
             <output id="fileSize">0</output>
         </div>
         <div><input type="submit" value="Send file" /></div>
-    </form>
+    <!--</form>-->
     <script>
         (async () => {
             while (true) {
