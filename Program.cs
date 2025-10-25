@@ -54,7 +54,7 @@ namespace PomoServer
 
 						if (request.StartsWith("GET"))
 						{
-							SendResponse(Encoding.UTF8.GetBytes($"Hello World! このサーバーに{++accessCount}回目のアクセスですぞい"));
+							SendResponse(Encoding.UTF8.GetBytes($"Hello World! Access Count:{++accessCount}"));
 						}
 
 						client.Close();
