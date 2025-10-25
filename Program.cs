@@ -6,7 +6,7 @@ internal class Program
 {
 	static void Main(string[] args)
 	{
-		var listener = new TcpListener(IPAddress.Parse("192.168.158.0"), 8000);
+		var listener = new TcpListener(IPAddress.Parse("192.168.158.0"), 80);
 		listener.Start();
 		Console.WriteLine($"Listening on {listener.LocalEndpoint}");
 
