@@ -41,8 +41,10 @@ namespace PomoServer
 							while (length <= 0)
 							{
 								length = await stream.ReadAsync(buffer, CancellationToken.None);
+								Console.WriteLine($"bytes length :{length}");
 								bufferStream.Write(buffer, 0, length);
 							}
+							Console.WriteLine($"buff stream length :{bufferStream.Length}");
 							var request = Encoding.UTF8.GetString(bufferStream.ToArray());
 							Console.WriteLine($"request done from l{client.Client.LocalEndPoint} r{client.Client.RemoteEndPoint}, {request}");
 
