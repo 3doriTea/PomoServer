@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using System.Net.WebSockets;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace PomoServer
@@ -38,13 +40,38 @@ namespace PomoServer
 							Console.WriteLine("request done");
 							//Console.WriteLine(request);
 
-							void SendResponse(byte[] contentBytes)
+							void SendResponseHTML(byte[] contentBytes)
+							{
+								var response = string.Join("\r\n",
+									[
+										"HTTP/1.1 200 OK",
+										//"Content-Type: text/plain",
+										"Content-Type: text/html; charset=UTF-8",
+										$"Content-Length: {contentBytes.Length}",
+										"Cache-Control: no-cache",
+										"Connection: keep-alive",
+									// コンテンツは byte配列直で結合
+								]);
+								response += "\r\n\r\n";
+
+
+								byte[] headerBytes = Encoding.UTF8.GetBytes(response);
+								byte[] responseBytes = new byte[headerBytes.Length + contentBytes.Length];
+								Array.Copy(headerBytes, responseBytes, headerBytes.Length);
+								Array.Copy(contentBytes, 0, responseBytes, headerBytes.Length, contentBytes.Length);
+								stream.Write(responseBytes, 0, responseBytes.Length);
+								Console.WriteLine(BitConverter.ToString(responseBytes).Replace("-", " "));
+							}
+
+							void SendResponseText(byte[] contentBytes)
 							{
 								var response = string.Join("\r\n",
 									[
 										"HTTP/1.1 200 OK",
 										"Content-Type: text/plain",
 										$"Content-Length: {contentBytes.Length}",
+										"Cache-Control: no-cache",
+										"Connection: keep-alive",
 									// コンテンツは byte配列直で結合
 								]);
 								response += "\r\n\r\n";
@@ -60,19 +87,15 @@ namespace PomoServer
 
 							if (request.StartsWith("GET"))
 							{
-								SendResponse(Encoding.UTF8.GetBytes($"Hello World! Access Count:{++accessCount}"));
-								//{
-								//	var response = string.Join("\r\n",
-								//	[
-								//		"HTTP/1.1 200 OK",
-								//		"Content-Type: text/plain",
-								//		$"Content-Length: 12",
-								//		"",
-								//		"Hello World!"
-								//	]);
-								//	var responseBytes = Encoding.UTF8.GetBytes(response);
-								//	stream.Write(responseBytes, 0, responseBytes.Length);
-								//}
+								if (request.StartsWith("GET /count"))
+								{
+									SendResponseText(Encoding.UTF8.GetBytes($"{accessCount}"));
+								}
+								else
+								{
+									SendResponseHTML(Encoding.UTF8.GetBytes(File.ReadAllText("./public/index.html")
+										.Replace("{%%hogehogefugafuga}", $"{accessCount}")));
+								}
 							}
 						}
 						catch (Exception ex)

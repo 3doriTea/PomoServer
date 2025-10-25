@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang=ja>
+<head>
+    <meta charset="UTF-8">
+    <title>PomoServer.exe</title>
+</head>
+
+<body>
+    <h1>ようこそ！{%%hogehogefugafuga}回目にアクセスした君！</h1>
+
+    <p id="counter"></p>
+    <script>
+        (async () => {
+            while (true) {
+                const response = await fetch("count/", { method: "GET" });
+                const text = await response.text();
+                document.getElementById("counter").textContent = `今世界から${text}回アクセスされてますぞい！`;
+            }
+        })();
+    </script>
+</body>
+
+</html>
