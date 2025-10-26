@@ -50,6 +50,27 @@ namespace PomoServer
 							var request = Encoding.UTF8.GetString(bufferStream.ToArray());
 							Console.WriteLine($"request done from l{client.Client.LocalEndPoint} r{client.Client.RemoteEndPoint}");
 
+							void SendResponseFile(byte[] buffer)
+							{
+								var response = string.Join("\r\n",
+									[
+										"HTTP/1.1 200 OK",
+										//"Content-Type: text/plain",
+										"Content-Type: application/octet-stream",
+										$"Content-Length: {buffer.Length}",
+										"Cache-Control: no-cache",
+										"Connection: keep-alive",
+									// コンテンツは byte配列直で結合
+								]);
+								response += "\r\n\r\n";
+
+								byte[] headerBytes = Encoding.UTF8.GetBytes(response);
+								byte[] responseBytes = new byte[headerBytes.Length + buffer.Length];
+								Array.Copy(headerBytes, responseBytes, headerBytes.Length);
+								Array.Copy(buffer, 0, responseBytes, headerBytes.Length, buffer.Length);
+								stream.Write(responseBytes, 0, responseBytes.Length);
+							}
+
 							void SendResponseHTML(byte[] contentBytes)
 							{
 								var response = string.Join("\r\n",
@@ -139,6 +160,16 @@ namespace PomoServer
 								{
 									Console.Write(" /count");
 									SendResponseText(Encoding.UTF8.GetBytes($"{accessCount}"));
+								}
+								else if (request.StartsWith("GET /data.dat"))
+								{
+									Console.Write(" /data.dat");
+									SendResponseFile(File.ReadAllBytes(Path.Combine("../db/data.dat")));
+								}
+								else if (request.StartsWith("GET /header.dat"))
+								{
+									Console.Write(" /header.dat");
+									SendResponseFile(File.ReadAllBytes(Path.Combine("../db/header.dat")));
 								}
 								else
 								{
