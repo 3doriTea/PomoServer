@@ -44,6 +44,7 @@ namespace PomoServer.World
 				if (Directory.Exists(dir) == false)
 				{
 					Directory.CreateDirectory(dir);
+					Console.WriteLine($"Created dir:{dir}");
 				}
 
 				using var fs = new FileStream(_headerFileName, FileMode.OpenOrCreate, FileAccess.Read);
@@ -52,8 +53,10 @@ namespace PomoServer.World
 
 				if (ResourceHeader.Size <= 0)
 				{
+					Console.WriteLine($"None data resource header");
 					return;  // ヘッダ情報これ以上ないなら回帰
 				}
+				Console.WriteLine($"ResourceHeader.Size:{ResourceHeader.Size}");
 
 				// ファイルデータのヘッダを取得
 				var buffer = new byte[ResourceHeader.Size];
@@ -61,6 +64,8 @@ namespace PomoServer.World
 
 				using var ms = new MemoryStream(buffer);
 				using var br = new BinaryReader(ms);
+
+				Console.WriteLine($"br.BaseStream.Position:{br.BaseStream.Position} < {br.BaseStream.Length}");
 
 				while (br.BaseStream.Position < br.BaseStream.Length)
 				{
