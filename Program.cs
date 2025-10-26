@@ -11,7 +11,7 @@ namespace PomoServer
 		const byte LineN = (byte)'\n';
 		static readonly byte[] BodyPrefix = [ LineR, LineN, LineR, LineN ];
 
-		private readonly static World.ResourceManager _resourceManager = new("../../db/", "data.dat", "header.dat");
+		private readonly static World.ResourceManager _resourceManager = new("../db/", "data.dat", "header.dat");
 
 		static void Main(string[] args)
 		{
