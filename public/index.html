@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <h1>ようこそ！{%%hogehogefugafuga}回目にアクセスした君！</h1>
+    <h1>ようこそ！{%%hogehogefugafuga}回目にアクセスした君！Hello World!</h1>
 
     <p id="counter"></p>
 
@@ -14,7 +14,7 @@
     <!--<input type="file" accept="image/*" id="objectInput"/>-->
     <!--<form name="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">-->
         <div>
-            <input id="uploadInput" type="file" multiple />
+            <input id="uploadInput" type="file" accept="image/*" />
             <label for="fileCount">選択されたファイル:</label>
             <output id="fileCount">0</output>;
             <label for="fileSize">合計サイズ:</label>
@@ -49,25 +49,44 @@
         submitButton.addEventListener("click", async () => {
             event.preventDefault();
 
-            const files = input.files;
-            if (!files.length) {
-                console.log("ファイルが設定されてないよ！");
-                return;
-            }
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.addEventListener("load", async (e) => {
+                const buffer = e.target.result;
 
-            const formData = new FormData();
-            for (const file of files) {
-                formData.append("files[]", file);
-            }
-
-            try {
                 const response = await fetch("/objectcreate", {
                     method: "POST",
-                    body: formData,
+                    headers: {
+                        "Content-Type": "application/octet-stream",
+                    },
+                    body: buffer,
                 });
-            } catch (e) {
-                console.error(e);
-            }
+
+                if (response.ok) {
+                    alert("送信完了");
+                }
+            });
+            reader.readAsArrayBuffer(file);
+
+            //const files = input.files;
+            //if (!files.length) {
+            //    alert("ファイルが設定されてないよ！");
+            //    return;
+            //}
+
+            //const formData = new FormData();
+            //for (const file of files) {
+            //    formData.append("files[]", file);
+            //}
+
+            //try {
+            //    const response = await fetch("/objectcreate", {
+            //        method: "POST",
+            //        body: formData,
+            //    });
+            //} catch (e) {
+            //    console.error(e);
+            //}
         });
 
     </script>

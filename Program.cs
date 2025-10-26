@@ -7,6 +7,10 @@ namespace PomoServer
 {
 	internal class Program
 	{
+		const byte LineR = (byte)'\r';
+		const byte LineN = (byte)'\n';
+		static readonly byte[] BodyPrefix = [ LineR, LineN, LineR, LineN ];
+
 		private readonly static World.ResourceManager _resourceManager = new("../../db/", "data.dat", "header.dat");
 
 		static void Main(string[] args)
@@ -60,7 +64,6 @@ namespace PomoServer
 								]);
 								response += "\r\n\r\n";
 
-
 								byte[] headerBytes = Encoding.UTF8.GetBytes(response);
 								byte[] responseBytes = new byte[headerBytes.Length + contentBytes.Length];
 								Array.Copy(headerBytes, responseBytes, headerBytes.Length);
@@ -81,6 +84,46 @@ namespace PomoServer
 								]);
 								response += "\r\n\r\n";
 
+
+								byte[] headerBytes = Encoding.UTF8.GetBytes(response);
+								byte[] responseBytes = new byte[headerBytes.Length + contentBytes.Length];
+								Array.Copy(headerBytes, responseBytes, headerBytes.Length);
+								Array.Copy(contentBytes, 0, responseBytes, headerBytes.Length, contentBytes.Length);
+								stream.Write(responseBytes, 0, responseBytes.Length);
+							}
+
+							void SendError(string message)
+							{
+								byte[] contentBytes = Encoding.UTF8.GetBytes(message);
+								var response = string.Join("\r\n",
+									[
+										"HTTP/1.1 400 BAD",
+										"Content-Type: text/plain",
+										$"Content-Length: {contentBytes.Length}",
+										"Cache-Control: no-cache",
+										"Connection: keep-alive",
+									]);
+								response += "\r\n\r\n";
+
+								byte[] headerBytes = Encoding.UTF8.GetBytes(response);
+								byte[] responseBytes = new byte[headerBytes.Length + contentBytes.Length];
+								Array.Copy(headerBytes, responseBytes, headerBytes.Length);
+								Array.Copy(contentBytes, 0, responseBytes, headerBytes.Length, contentBytes.Length);
+								stream.Write(responseBytes, 0, responseBytes.Length);
+							}
+
+							void SendOk(string message)
+							{
+								byte[] contentBytes = Encoding.UTF8.GetBytes(message);
+								var response = string.Join("\r\n",
+									[
+										"HTTP/1.1 200 OK",
+										"Content-Type: text/plain",
+										$"Content-Length: {contentBytes.Length}",
+										"Cache-Control: no-cache",
+										"Connection: keep-alive",
+									]);
+								response += "\r\n\r\n";
 
 								byte[] headerBytes = Encoding.UTF8.GetBytes(response);
 								byte[] responseBytes = new byte[headerBytes.Length + contentBytes.Length];
@@ -111,31 +154,57 @@ namespace PomoServer
 								{
 									Console.Write(" /objectcreate");
 
-									Console.Write(request);
-									bufferStream.Seek(0, SeekOrigin.Begin);
-									var parser = await MultipartFormDataParser.ParseAsync(bufferStream);
-									Console.Write("parsed");
-									foreach (var file in parser.Files)
+									int bodyIndex = 0;  // ボディが始まるインデックス
+
+									byte[] viewBuffer = bufferStream.ToArray();
+									for (int i = 0; i < viewBuffer.Length - BodyPrefix.Length; i++)
 									{
-										Console.Write("file reading");
-										using var ms = new MemoryStream();
-										file.Data.CopyTo(ms);
-										bool succeed = await _resourceManager.AddFile(
-											file.FileName,
-											file.FileName,
-											ms.ToArray()
-											).WaitAsync(CancellationToken.None);
-
-										Console.WriteLine($"upload {(succeed ? "OK" : "NG")}");
-
-										if (succeed)
+										if (viewBuffer[i..(i + BodyPrefix.Length)].SequenceEqual(BodyPrefix))
 										{
-										}
-										else
-										{
-
+											bodyIndex = i + BodyPrefix.Length;
 										}
 									}
+
+									if (bodyIndex >= bufferStream.Length)
+									{
+										SendError("空のファイルを送らないで！");
+										return;
+									}
+
+									bufferStream.Seek(bodyIndex, SeekOrigin.Begin);
+									int fileSize = (int)bufferStream.Length - bodyIndex;
+									byte[] fileBuffer = new byte[fileSize];
+									bufferStream.Read(fileBuffer, 0, fileSize);
+
+									await _resourceManager.AddFile(
+										$"file{client.Client.RemoteEndPoint}",
+										$"file{client.Client.RemoteEndPoint}",
+										fileBuffer);
+
+									SendOk("");
+
+									//var parser = await MultipartFormDataParser.ParseAsync(bufferStream);
+									//Console.Write("parsed");
+									//foreach (var file in parser.Files)
+									//{
+									//	Console.Write("file reading");
+									//	using var ms = new MemoryStream();
+									//	file.Data.CopyTo(ms);
+									//	bool succeed = await _resourceManager.AddFile(
+									//		file.FileName,
+									//		file.FileName,
+									//		ms.ToArray()
+									//		).WaitAsync(CancellationToken.None);
+									//	Console.WriteLine($"upload {(succeed ? "OK" : "NG")}");
+
+									//	if (succeed)
+									//	{
+									//	}
+									//	else
+									//	{
+
+									//	}
+									//}
 								}
 							}
 							else
